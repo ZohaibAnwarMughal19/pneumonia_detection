@@ -9,13 +9,30 @@ import numpy as np
 from PIL import Image
 import os
 import io
+import gdown
 
 app = Flask(__name__)
 
 # ============================================
+# Model download karo Google Drive se
+# ============================================
+MODEL_PATH = 'model/pneumonia_model_v2.h5'
+DRIVE_FILE_ID = '1IkS8gVPeGzBzeQ_dAF4cuAKfZFdlZAgv'
+
+if not os.path.exists(MODEL_PATH):
+    os.makedirs('model', exist_ok=True)
+    print("Model download ho raha hai Google Drive se...")
+    gdown.download(
+        f'https://drive.google.com/uc?id={DRIVE_FILE_ID}',
+        MODEL_PATH,
+        quiet=False
+    )
+    print("Model download complete!")
+
+# ============================================
 # Model load karo
 # ============================================
-MODEL_PATH = os.path.join(os.path.dirname(__file__), 'model', 'pneumonia_model_v2.h5')
+print("Model load ho raha hai...")
 model = tf.keras.models.load_model(MODEL_PATH)
 print("Model loaded successfully!")
 
@@ -34,24 +51,20 @@ def home():
 # ============================================
 @app.route('/predict', methods=['POST'])
 def predict():
-    # Image check karo
     if 'xray' not in request.files:
         return jsonify({"error": "Koi image nahi mili!"})
 
     file = request.files['xray']
 
     try:
-        # Image process karo
         img = Image.open(io.BytesIO(file.read())).convert('RGB')
         img = img.resize((150, 150))
         img_array = np.array(img) / 255.0
         img_array = np.expand_dims(img_array, axis=0)
 
-        # Predict karo
         prediction = model.predict(img_array, verbose=0)
         confidence = float(prediction[0][0])
 
-        # Result decide karo
         if confidence >= 0.5:
             result  = "PNEUMONIA"
             percent = round(confidence * 100, 2)
