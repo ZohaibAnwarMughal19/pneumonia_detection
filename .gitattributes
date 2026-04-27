@@ -1,1 +1,2 @@
 *.h5 filter=lfs diff=lfs merge=lfs -text
+model/pneumonia_model_v2.h5 filter=lfs diff=lfs merge=lfs -text
