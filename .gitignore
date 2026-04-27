@@ -6,4 +6,4 @@ chest_xray/
 *.png
 *.jpg
 *.jpeg
-uploads/
+uploads/model/pneumonia_model_v2.h5 
