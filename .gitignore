@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+*.pyo
+dataset/
+chest_xray/
+*.png
+*.jpg
+*.jpeg
+uploads/
